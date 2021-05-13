@@ -139,7 +139,7 @@ def runDTW(testWord: str, rtn: multiprocessing.Array, sourceDirectory="split", l
         return False, -1, None
     test = mfcc(test, fs, nfft=1200)
     # print(test.shape)
-
+    # check version control
     mindist = 9999999
     for th, source in enumerate(sources):
         n = len(source)
