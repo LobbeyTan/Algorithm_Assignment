@@ -103,7 +103,7 @@ class Page2(tk.Frame):
 
     def __randomAnalysis(self):
         self.scrapingText.set(" Analyzing")
-        # self.tool.randomScraping()
+
         queries = [
             ("city-link", "city-link express news"),
             ("pos laju", "pos laju news"),
@@ -113,8 +113,9 @@ class Page2(tk.Frame):
         ]
 
         for q in queries:
-            self.tool.analyzeSentiment(q)
+            self.tool.randomSentiment(q, n=10)
 
+        print("DONE")
         self.scrapingText.set(" Random Scraping")
 
     def __startSentiment(self):
