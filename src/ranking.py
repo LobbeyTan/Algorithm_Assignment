@@ -13,15 +13,17 @@ class CourierRecommendation:
         self.__sorting()
 
     def __calculateScore(self, distance, sentimentScore):
-        score = (0.5 * - distance) + (50 * sentimentScore)
+        score = (0.5 * - distance) + (100 * sentimentScore) + 100
         return score
 
     def __preprocessing(self):
         for courier, distance in self.customer.distanceWithHub.items():
+            n = len(courier.sentimentResults)
+
             positivity = sum([result.positivity for result in courier.sentimentResults])
             negativity = sum([result.negativity for result in courier.sentimentResults])
 
-            score = self.__calculateScore(distance, (positivity - negativity) / len(courier.sentimentResults))
+            score = self.__calculateScore(distance, (positivity - negativity) / (1 if n == 0 else n))
             self.customer.scoreWithHub[courier] = score
 
     def __sorting(self):
