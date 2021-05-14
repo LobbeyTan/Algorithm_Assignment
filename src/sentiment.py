@@ -19,10 +19,10 @@ searchEngineID = "1d322aba9f2149b89"
 
 class SentimentAnalysis:
     def __init__(self, url="https://www.google.com/"):
-        self.url = url
-        self.name = list(filter(None, re.split("/+", self.url)))[-1]
+        self.article = self.__getArticle(url)
 
-        self.article = self.__getArticle()
+        self.name = self.article.title
+
         self.wordList = self.__preprocessing()
 
         dictionary = self.__wordListToFreqDict(self.wordList)
@@ -39,10 +39,9 @@ class SentimentAnalysis:
         self.relatedCourier = -1
 
         self.analyzeSentiment()
-        print(self.relatedCourier)
 
-    def __getArticle(self):
-        article = Article(self.url)
+    def __getArticle(self, url):
+        article = Article(url)
         try:
             article.download()
             article.parse()
@@ -103,6 +102,12 @@ class SentimentAnalysis:
         # Get values for x-axis (list of words)
         freq = list(self.sortedDict.values())
 
+        # Make empty graph if the article cannot be analyzed or no wordList
+        if len(word) == 0:
+            word = None
+        if len(freq) == 0:
+            freq = None
+
         # Plot histogram of word frequency
         fig = px.bar(x=word, y=freq, labels=dict(x="Word", y="Frequency"),
                      title=f"Word Frequency in ({self.name}) Page")
@@ -122,9 +127,17 @@ class SentimentAnalysis:
         freqDict = self.__wordListToFreqDict(output)
         sortedDict = self.__sortFreqDict(freqDict)
 
-        fig = px.bar(x=list(sortedDict.keys()), y=list(sortedDict.values()),
-                     labels=dict(x="Word", y="Frequency"),
+        x = list(sortedDict.keys())
+        y = list(sortedDict.values())
+
+        if len(x) == 0:
+            x = None
+        if len(y) == 0:
+            y = None
+
+        fig = px.bar(x=x, y=y, labels=dict(x="Word", y="Frequency"),
                      title=f"{model.capitalize()} Word Frequency in ({self.name}) Page")
+
         fig.write_html(f"sentiment/figures/{model}_graph.html")
 
     def analyzeSentiment(self):
@@ -186,6 +199,12 @@ class SentimentAnalysis:
         relatedCourierScore = self.__sortFreqDict(relatedCourierScore)
         return list(relatedCourierScore.keys())
 
+    def __getstate__(self):
+        attributes = self.__dict__
+        attributes.pop("article")
+
+        return attributes
+
 
 class SentimentAnalysisTool:
     def __init__(self, couriers: object = []) -> object:
@@ -211,18 +230,7 @@ class SentimentAnalysisTool:
     def hasAnalyzed(self, url):
         return url in self.history
 
-    def randomScraping(self):
-        queries = [
-            ("city-link", "city-link express news"),
-            ("pos laju", "pos laju news"),
-            ("gdex", "gdex express news"),
-            ("j&t", "j&t express news"),
-            ("dhl", "dhl express news"),
-        ]
-        with concurrent.futures.ProcessPoolExecutor(5) as executor:
-            executor.map(self.analyzeSentiment, queries)
-
-    def analyzeSentiment(self, q):
+    def randomSentiment(self, q, n=5):
         exactTerms, query = q
         items = []
 
@@ -243,10 +251,23 @@ class SentimentAnalysisTool:
             items += data["items"]
 
         print(query)
-        for item in random.sample(items, 5):
-            link = item['link']
-            print(link)
-            self.getSentiment(link)
+
+        urls = [item['link'] for item in random.sample(items, n)]
+
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n) as executor:
+            results = executor.map(randomSentiment, urls)
+
+        for url, result in results:
+            self.history[url] = result
+
+            relatedCourier = result.relatedCourier
+            if relatedCourier != -1:
+                self.couriers[relatedCourier].appendSentiment(result)
+
+
+def randomSentiment(url):
+    print(url)
+    return url, SentimentAnalysis(url)
 
 
 def downloadResources():
