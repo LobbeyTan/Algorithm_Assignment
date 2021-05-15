@@ -5,12 +5,13 @@ import threading
 import imageio
 import audioplayer
 import speech_recognition as sr
+import random
 from PIL import Image, ImageTk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.scrolledtext import ScrolledText
 from multiprocessing import Process, Array
-from constant import getIconImage
+from constant import *
 from scipy.io import wavfile
 from os import listdir
 from dtw import runDTW
@@ -20,7 +21,7 @@ class Page4(tk.Frame):
     isInitialized = False
 
     def __init__(self, parent, customers, couriers, controller, name):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=lightBlue)
         print(f"{name} Frame initialized")
 
         self.customers = customers
@@ -33,10 +34,10 @@ class Page4(tk.Frame):
         self.showAudioGraph()
 
     def showVideo(self):
-        frame = tk.Frame(self, width=800)
+        frame = tk.Frame(self, bg=lightBlue)
         frame.grid(row=0, column=0, sticky="new", pady=7, padx=10)
 
-        video = tk.Label(frame, anchor="center")
+        video = tk.Label(frame, anchor="center", borderwidth=2, relief="groove")
         video.grid(row=0, column=0, sticky="nsew", rowspan=2)
 
         controller = tk.Button(frame)
@@ -44,12 +45,12 @@ class Page4(tk.Frame):
 
         TkVideo("voice/video.mp4", "voice/voice.wav", controller, video, size=(300, 200))
 
-        tk.Label(frame, text="Extracted Word Using Google Speech Recognition:", anchor="w"). \
-            grid(row=0, column=1, padx=10, sticky="nw")
+        tk.Label(frame, text="Extracted Word Using Google Speech Recognition:",
+                 anchor="w", font=textFontU, background=lightBlue).grid(row=0, column=1, padx=10, sticky="nw")
 
         self.runRecognition()
 
-        self.textBox = ScrolledText(frame, width=55, height=10, wrap=tk.WORD)
+        self.textBox = ScrolledText(frame, width=63, height=10, wrap=tk.WORD, background=blue, font=textFontN)
         self.textBox.grid(row=1, column=1, pady=7, padx=10)
         self.textBox.insert(tk.INSERT, "Analyzing")
 
@@ -81,7 +82,8 @@ class Page4(tk.Frame):
 
         plt.style.use('seaborn-whitegrid')
         for i, testWord in enumerate(listdir("test/")):
-            AudioContent(scrollable_frame, testWord, row=i // 2, column=i % 2)
+            color = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+            AudioContent(scrollable_frame, testWord, row=i // 2, column=i % 2, color=color)
 
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.__onFrameConfigure(canvas))
 
@@ -90,16 +92,17 @@ class Page4(tk.Frame):
 
 
 class AudioContent:
-    def __init__(self, master, name, row, column):
+    def __init__(self, master, name, row, column, color):
         self.name = name
+        self.color = color
         self.path = f"test/{name}"
         self.audioPlayer = audioplayer.AudioPlayer(self.path)
         fs, self.data = wavfile.read(self.path)
 
         self.isAnalyzing = False
 
-        self.frame = tk.Frame(master)
-        self.frame.grid(row=row, column=column)
+        self.frame = tk.Frame(master, bg=blue)
+        self.frame.grid(row=row, column=column, ipady=10)
 
         self.status = tk.Label
         self.result = tk.Label
@@ -124,30 +127,31 @@ class AudioContent:
         # Turn off tick labels
         ax.set_yticklabels([])
         ax.set_xticklabels([])
-        ax.plot(self.data, color='#DADA67')
+        ax.plot(self.data, color=self.color)
 
         waveform = FigureCanvasTkAgg(fig, top)
         waveform.get_tk_widget().grid(row=0, column=0)
 
     def showDTW(self):
-        btm = tk.Frame(self.frame)
+        btm = tk.Frame(self.frame, bg=blue)
         btm.grid(row=1, column=0)
 
         play = getIconImage("play")
-        button = tk.Button(btm, image=play, command=self.audioPlayer.play)
+        button = tk.Button(btm, image=play, command=self.audioPlayer.play, height=22, **buttonConfig3)
         button.image = play
-        button.grid(row=0, column=0)
+        button.grid(row=0, column=0, pady=10)
 
-        tk.Button(btm, text="Run DTW", command=self.startDTW).grid(row=0, column=1, sticky="w")
+        tk.Button(btm, text="Run DTW", command=self.startDTW,
+                  **buttonConfig3).grid(row=0, column=1, sticky="w", pady=10)
 
-        self.status = tk.Label(btm, text="Not Yet Analyze", width=15, anchor="center")
-        self.status.grid(row=0, column=2, sticky="w")
+        self.status = tk.Label(btm, text="Not Yet Analyze", width=15, anchor="center", font=textFontB, background=blue)
+        self.status.grid(row=0, column=2, sticky="w", pady=10)
 
-        self.result = tk.Label(btm, text="UNKNOWN", width=15, anchor="center")
-        self.result.grid(row=0, column=3, sticky="w")
+        self.result = tk.Label(btm, text="UNKNOWN", width=15, anchor="center", font=textFontB, background=blue)
+        self.result.grid(row=0, column=3, sticky="w", pady=10)
 
-        tk.Label(btm, text="DTW Distance : ").grid(row=1, column=2)
-        self.distance = tk.Label(btm, text="NULL")
+        tk.Label(btm, text="DTW Distance : ", font=textFontB, background=blue).grid(row=1, column=2)
+        self.distance = tk.Label(btm, text="NULL", font=textFontB, background=blue)
         self.distance.grid(row=1, column=3)
 
     def startDTW(self):

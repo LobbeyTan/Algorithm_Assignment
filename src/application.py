@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from constant import *
 
 class Application(tk.Tk):
     def __init__(self, frames, customers, couriers, *args, **kwargs):
@@ -20,22 +20,26 @@ class Application(tk.Tk):
         topBar = tk.Frame(self.container, height=30)
         topBar.grid(row=0, column=0, sticky="n")
 
-        page1Button = tk.Button(topBar, text="Problem 1", width=27, command=lambda: self.show_frame("page_1"))
+        page1Button = tk.Button(topBar, text="Problem 1", width=24, command=lambda: self.show_frame("page_1"))
+        page1Button.config(**buttonConfig1)
         page1Button.grid(row=0, column=0)
 
-        page2Button = tk.Button(topBar, text="Problem 2", width=27, command=lambda: self.show_frame("page_2"))
+        page2Button = tk.Button(topBar, text="Problem 2", width=24, command=lambda: self.show_frame("page_2"))
+        page2Button.config(**buttonConfig1)
         page2Button.grid(row=0, column=1)
 
-        page3Button = tk.Button(topBar, text="Problem 3", width=27, command=lambda: self.show_frame("page_3"))
+        page3Button = tk.Button(topBar, text="Problem 3", width=24, command=lambda: self.show_frame("page_3"))
+        page3Button.config(**buttonConfig1)
         page3Button.grid(row=0, column=2)
 
-        page4Button = tk.Button(topBar, text="Problem 4", width=27, command=lambda: self.show_frame("page_4"))
+        page4Button = tk.Button(topBar, text="Problem 4", width=24, command=lambda: self.show_frame("page_4"))
+        page4Button.config(**buttonConfig1)
         page4Button.grid(row=0, column=3)
 
         self.init()
 
     def init(self):
-        pageName = "page_1"
+        pageName = "page_4"
         self.show_frame(pageName)
 
     def show_frame(self, pageName):

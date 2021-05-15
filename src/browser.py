@@ -10,7 +10,7 @@ class WebBrowser:
                  browserSetting=dict, url=str, window_title=str, rect=None):
 
         if rect is None:
-            rect = [0, 0, 800, 500]
+            rect = [0, 0, 810, 500]
 
         self.browser = PyBrowser
         self.webThread = threading.Thread

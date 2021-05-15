@@ -49,8 +49,9 @@ def main():
         "page_4": Page4
     }, customers=customers, couriers=couriers)
     # app.overrideredirect(True)
+    app.resizable(False, False)
+    app.geometry('810x650')
     app.eval('tk::PlaceWindow . center')
-    app.geometry('800x650')
     app.mainloop()
 
 

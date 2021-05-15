@@ -1,7 +1,7 @@
 from tkinter.scrolledtext import ScrolledText
 from sentiment import SentimentAnalysisTool, SentimentAnalysis
 from browser import WebBrowser
-from constant import getIconImage
+from constant import *
 from threading import Thread
 import tkinter as tk
 
@@ -10,7 +10,7 @@ class Page2(tk.Frame):
     isInitialized = False
 
     def __init__(self, parent, customers, couriers, controller, name):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=lightBlue)
         print(f"{name} Frame initialized")
 
         self.webBrowser = WebBrowser
@@ -35,7 +35,7 @@ class Page2(tk.Frame):
         self.showStatistic()
 
     def showArticle(self):
-        browserFrame = tk.Frame(self, bg='blue', width=800, height=500)
+        browserFrame = tk.Frame(self, bg='blue', width=810, height=500)
         browserFrame.grid(row=0, column=0)
 
         initialUrl = "https://www.google.com/"
@@ -43,58 +43,57 @@ class Page2(tk.Frame):
         self.webBrowser = WebBrowser(browserFrame, browserSetting, initialUrl, "Search For Article")
         self.webBrowser.start()
 
-        frame = tk.Frame(self, bg='white', width=800, height=200)
-        frame.grid(row=1, column=0, sticky="w", columnspan=10)
+        mining = getIconImage("mining")
+        scraping = tk.Button(browserFrame, textvariable=self.scrapingText, image=mining, compound="left",
+                             width=190, command=self.__randomScraping, **buttonConfig2)
+        scraping.image = mining
+        scraping.place(x=3, y=5)
+
+        frame = tk.Frame(self, bg=lightPurple, width=800, height=200)
+        frame.grid(row=1, column=0, sticky="w")
 
         linkSelected = tk.StringVar(frame, "https://www.google.com/")
         dropDownMenu = tk.OptionMenu(frame, linkSelected, *(self.__getSampleLinks()))
-        dropDownMenu.config(width=80, anchor="w")
-        dropDownMenu.grid(row=1, column=0, sticky="w")
+        dropDownMenu.config(width=80, anchor="w", **dropDownConfig)
+        dropDownMenu.grid(row=0, column=0, sticky="w")
         linkSelected.trace(mode="w", callback=lambda *args: self.__search(linkSelected.get()))
 
-        tk.Button(frame, text="Analyze Page", command=self.__startSentiment).grid(row=1, column=1)
-        tk.Label(frame, text=" STATUS: ").grid(row=1, column=2)
+        tk.Button(frame, text="Analyze Page", command=self.__startSentiment, **buttonConfig3).grid(row=0, column=1)
+        tk.Label(frame, text="  STATUS  ", background=lightPurple, font=buttonFontN).grid(row=0, column=2, sticky='ns')
 
-        self.status = tk.Label(frame, text="Not yet analyze", width=17)
-        self.status.grid(row=1, column=3)
+        self.status = tk.Label(frame, text="Not yet analyze", width=15, background="#BFC7E4", font=buttonFontN)
+        self.status.grid(row=0, column=3, sticky='ns')
 
     def showStatistic(self):
-        frame = tk.Frame(self, bg='white')
+        frame = tk.Frame(self, bg=lightBlue)
         frame.grid(row=2, column=0, sticky="w")
 
-        self.wordFreqDisplay = ScrolledText(frame, width=30, height=4, wrap=tk.WORD)
+        self.wordFreqDisplay = ScrolledText(frame, width=30, height=4, wrap=tk.WORD, bg=lightBlue)
         self.wordFreqDisplay.grid(row=0, column=0, pady=10, padx=10, rowspan=2)
         self.wordFreqDisplay.insert(tk.INSERT, "No Word Frequency Found")
 
         wordFreqButton = tk.Button(frame, text="Word Frequency", command=lambda: self.__showGraph(0))
-        wordFreqButton.config(width=16)
-        wordFreqButton.grid(row=0, column=1)
+        wordFreqButton.config(width=17)
+        wordFreqButton.grid(row=0, column=1, padx=1, pady=10)
 
         positveButton = tk.Button(frame, text="Positive Sentiment", command=lambda: self.__showGraph(1))
-        positveButton.config(width=16)
-        positveButton.grid(row=0, column=2)
+        positveButton.config(width=17)
+        positveButton.grid(row=0, column=2, padx=1, pady=10)
 
         negativeButton = tk.Button(frame, text="Negative Sentiment", command=lambda: self.__showGraph(2))
-        negativeButton.config(width=16)
-        negativeButton.grid(row=0, column=3)
+        negativeButton.config(width=17)
+        negativeButton.grid(row=0, column=3, padx=1, pady=10)
 
         neutralButton = tk.Button(frame, text="Neutral Sentiment", command=lambda: self.__showGraph(3))
-        neutralButton.config(width=16)
-        neutralButton.grid(row=0, column=4)
+        neutralButton.config(width=17)
+        neutralButton.grid(row=0, column=4, padx=1, pady=10)
 
-        self.sentimentDescription = tk.Label(frame, text="No sentiment analysis yet", width=70)
-        self.sentimentDescription.config(anchor="w", padx=10, foreground="red", pady=10)
-        self.sentimentDescription.grid(row=1, column=1, sticky="se", columnspan=4)
-
-        mining = getIconImage("mining")
-
-        scraping = tk.Button(frame, textvariable=self.scrapingText,
-                             image=mining, compound="left", width=130, command=self.__randomScraping)
-        scraping.image = mining
-        scraping.place(x=653, y=55)
+        self.sentimentDescription = tk.Label(frame, text="No sentiment analysis yet")
+        self.sentimentDescription.config(anchor="w", padx=10, foreground="red", font=subFontN)
+        self.sentimentDescription.grid(row=1, column=1, sticky="nwe", columnspan=4, padx=1)
 
     def __randomScraping(self):
-        if self.scrapingText == " Analyzing":
+        if self.scrapingText.get().strip() == "Analyzing":
             return
 
         thread = Thread(target=self.__randomAnalysis)
@@ -102,7 +101,7 @@ class Page2(tk.Frame):
         thread.start()
 
     def __randomAnalysis(self):
-        self.scrapingText.set(" Analyzing")
+        self.scrapingText.set("{:^25}".format("Analyzing"))
 
         queries = [
             ("city-link", "city-link express news"),

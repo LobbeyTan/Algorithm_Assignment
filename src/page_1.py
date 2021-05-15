@@ -1,13 +1,15 @@
+import sys
 import tkinter as tk
 from tkinter import messagebox
 from browser import WebBrowser
+from constant import *
 
 
 class Page1(tk.Frame):
     isInitialized = False
 
     def __init__(self, parent, customers, couriers, controller, name):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=lightBlue)
         print(f"{name} Frame initialized")
 
         self.webBrowser = WebBrowser
@@ -19,37 +21,51 @@ class Page1(tk.Frame):
         self.showMap()
         self.showDistance()
 
-    def closeBrowser(self):
-        self.webBrowser.close()
-
     def loadURL(self, cusID):
         self.webBrowser.loadUrl(f'file:///html/customer{cusID}.html')
 
     def showMap(self):
-        browserFrame = tk.Frame(self, bg='blue', width=800, height=500)
-        browserFrame.grid(row=0, column=0)
+        browserFrame = tk.Frame(self, bg='blue', width=810, height=500)
+        browserFrame.grid(row=0, column=0, columnspan=2)
 
         initialUrl = 'file:///html/customer1.html'
         browserSetting = {}
         self.webBrowser = WebBrowser(browserFrame, browserSetting, initialUrl, "Customer Route Path")
         self.webBrowser.start()
 
-        frame = tk.Frame(self, bg='black', width=800, height=200)
-        frame.grid(row=1, column=0, sticky="w", columnspan=10)
+        frame1 = tk.Frame(self)
+        frame1.grid(row=1, column=0, sticky="w")
 
-        tk.Button(frame, text='Exit', command=self.closeBrowser).grid(row=1, column=0)
-        tk.Button(frame, text='Customer 1', command=lambda: self.loadURL(1)).grid(row=1, column=1)
-        tk.Button(frame, text='Customer 2', command=lambda: self.loadURL(2)).grid(row=1, column=2)
-        tk.Button(frame, text='Customer 3', command=lambda: self.loadURL(3)).grid(row=1, column=3)
-        tk.Button(frame, text='Show something',
-                  command=lambda: messagebox.showinfo('TITLE', 'Shown something')).grid(row=1, column=10)
+        tk.Button(frame1, text='Customer 1', command=lambda: self.loadURL(1),
+                  width=15, **buttonConfig1).grid(row=0, column=0)
+        tk.Button(frame1, text='Customer 2', command=lambda: self.loadURL(2),
+                  width=15, **buttonConfig1).grid(row=0, column=1)
+        tk.Button(frame1, text='Customer 3', command=lambda: self.loadURL(3),
+                  width=15, **buttonConfig1).grid(row=0, column=2)
+
+        infoIcon = getIconImage("info", size=(18, 18))
+        infoButton = tk.Button(frame1, image=infoIcon, text=" INFO", compound="left", width=70, **buttonConfig1)
+        infoButton.image = infoIcon
+        infoButton.config(command=lambda: messagebox.showinfo(
+            'Path Color', "Black: Route without hub\nBlue : Route pass through hub\nRed  : Shortest route with hub"))
+
+        infoButton.grid(row=0, column=3)
+
+        frame2 = tk.Frame(self)
+        frame2.grid(row=1, column=1, sticky='e')
+
+        exitIcon = getIconImage("exit")
+        exitButton = tk.Button(frame2, image=exitIcon, command=lambda: sys.exit(0), text="EXIT ", compound="right")
+        exitButton.image = exitIcon
+        exitButton.config(width=70, **buttonConfig1)
+        exitButton.grid(row=0, column=0)
 
     def showDistance(self):
-        frame = tk.Frame(self, bg='white', width=800, height=200)
-        frame.grid(row=2, column=0, sticky="w")
+        frame = tk.Frame(self, bg=lightBlue)
+        frame.grid(row=2, column=0, sticky="w", columnspan=2)
 
         for i, customer in enumerate(self.customers):
-            displayDistance = DisplayDistance(frame, customer, i + 2)
+            displayDistance = DisplayDistance(frame, customer, i)
             displayDistance.createInstance()
 
 
@@ -64,9 +80,10 @@ class DisplayDistance:
         self.distLabel = None
 
     def createInstance(self):
-        tk.Label(self.frame,
-                 text=f'Distance of CUSTOMER {self.customer.ID}\'s parcel from {self.customer.origin} '
-                      f'to {self.customer.destination} through').grid(row=self.row, column=0, sticky="w")
+        desc = tk.Label(self.frame, font=subFontN, background=lightBlue)
+        desc['text'] = f'Distance of customer {self.customer.ID}\'s parcel from {self.customer.origin} ' \
+                       f'to {self.customer.destination} through '
+        desc.grid(row=self.row, column=0, sticky="w")
 
         choices = list(self.distances.keys())
         choices.insert(0, "None")
@@ -74,16 +91,16 @@ class DisplayDistance:
         self.hub = tk.StringVar(self.frame, self.customer.minDistanceHub)
 
         self.dropDownMenu = tk.OptionMenu(self.frame, self.hub, *choices)
-        self.dropDownMenu.config(width=20)
+        self.dropDownMenu.config(width=15, font=subFontN, **dropDownConfig)
         self.dropDownMenu.grid(row=self.row, column=1)
 
-        tk.Label(self.frame, text=f" = ").grid(row=self.row, column=2)
+        tk.Label(self.frame, text=f" = ", font=subFontN, background=lightBlue).grid(row=self.row, column=2)
 
-        self.distLabel = tk.Label(self.frame)
+        self.distLabel = tk.Label(self.frame, font=subFontN, background=lightBlue, width=10)
         self.distLabel.grid(row=self.row, column=3)
         self.__setDistance(self.customer.minimumDistance)
 
-        tk.Label(self.frame, text=f"km").grid(row=self.row, column=4)
+        tk.Label(self.frame, text=f"km", font=subFontN, background=lightBlue).grid(row=self.row, column=4)
 
         self.hub.trace("w", self.__changeDistance)
 
@@ -98,4 +115,4 @@ class DisplayDistance:
 
     def __setDistance(self, distance):
         self.distLabel.config(foreground='red' if distance == self.customer.minimumDistance else 'blue',
-                              text=f" {distance} ")
+                              text=f" {distance}")
