@@ -96,7 +96,7 @@ class DisplayDistance:
 
         tk.Label(self.frame, text=f" = ", font=subFontN, background=lightBlue).grid(row=self.row, column=2)
 
-        self.distLabel = tk.Label(self.frame, font=subFontN, background=lightBlue, width=10)
+        self.distLabel = tk.Label(self.frame, font=subFontB, background=lightBlue, width=10)
         self.distLabel.grid(row=self.row, column=3)
         self.__setDistance(self.customer.minimumDistance)
 

@@ -68,29 +68,29 @@ class Page2(tk.Frame):
         frame = tk.Frame(self, bg=lightBlue)
         frame.grid(row=2, column=0, sticky="w")
 
-        self.wordFreqDisplay = ScrolledText(frame, width=30, height=4, wrap=tk.WORD, bg=lightBlue)
-        self.wordFreqDisplay.grid(row=0, column=0, pady=10, padx=10, rowspan=2)
+        self.wordFreqDisplay = ScrolledText(frame, width=30, height=5, wrap=tk.WORD, bg=lightBlue)
+        self.wordFreqDisplay.grid(row=0, column=0, pady=7, padx=10, rowspan=2)
         self.wordFreqDisplay.insert(tk.INSERT, "No Word Frequency Found")
 
         wordFreqButton = tk.Button(frame, text="Word Frequency", command=lambda: self.__showGraph(0))
-        wordFreqButton.config(width=17)
-        wordFreqButton.grid(row=0, column=1, padx=1, pady=10)
+        wordFreqButton.config(width=17, height=2)
+        wordFreqButton.grid(row=0, column=1, padx=1, pady=7)
 
         positveButton = tk.Button(frame, text="Positive Sentiment", command=lambda: self.__showGraph(1))
-        positveButton.config(width=17)
-        positveButton.grid(row=0, column=2, padx=1, pady=10)
+        positveButton.config(width=17, height=2)
+        positveButton.grid(row=0, column=2, padx=1, pady=7)
 
         negativeButton = tk.Button(frame, text="Negative Sentiment", command=lambda: self.__showGraph(2))
-        negativeButton.config(width=17)
-        negativeButton.grid(row=0, column=3, padx=1, pady=10)
+        negativeButton.config(width=17, height=2)
+        negativeButton.grid(row=0, column=3, padx=1, pady=7)
 
         neutralButton = tk.Button(frame, text="Neutral Sentiment", command=lambda: self.__showGraph(3))
-        neutralButton.config(width=17)
-        neutralButton.grid(row=0, column=4, padx=1, pady=10)
+        neutralButton.config(width=17, height=2)
+        neutralButton.grid(row=0, column=4, padx=1, pady=7)
 
-        self.sentimentDescription = tk.Label(frame, text="No sentiment analysis yet")
-        self.sentimentDescription.config(anchor="w", padx=10, foreground="red", font=subFontN)
-        self.sentimentDescription.grid(row=1, column=1, sticky="nwe", columnspan=4, padx=1)
+        self.sentimentDescription = tk.Label(frame, text="No sentiment analysis yet", borderwidth=3, relief="groove")
+        self.sentimentDescription.config(anchor="w", padx=10, foreground="green", font=subFontN)
+        self.sentimentDescription.grid(row=1, column=1, sticky="swe", columnspan=4, padx=1, pady=7)
 
     def __randomScraping(self):
         if self.scrapingText.get().strip() == "Analyzing":

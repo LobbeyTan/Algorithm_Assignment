@@ -50,7 +50,8 @@ def main():
     }, customers=customers, couriers=couriers)
     # app.overrideredirect(True)
     app.resizable(False, False)
-    app.geometry('810x650')
+    app.title('Algorithm Design & Analysis Assignment')
+    app.geometry('810x655')
     app.eval('tk::PlaceWindow . center')
     app.mainloop()
 

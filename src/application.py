@@ -39,7 +39,7 @@ class Application(tk.Tk):
         self.init()
 
     def init(self):
-        pageName = "page_4"
+        pageName = "page_1"
         self.show_frame(pageName)
 
     def show_frame(self, pageName):
