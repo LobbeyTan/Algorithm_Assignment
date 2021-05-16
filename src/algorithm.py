@@ -88,8 +88,9 @@ def getZarr(string, z):
 
     l, r, k = 0, 0, 0
     for i in range(1, n):
-
+# if i>R nothing matches so we will calculate. Z[i] using naive way.
         if i > r:
+          #we reset L and R and compute new [L,R] by comparing  str[0..] to str[i..] and get Z[i] (= R-L+1).
             l, r = i, i
             while r < n and string[r - l] == string[r]:
                 r += 1
@@ -97,12 +98,14 @@ def getZarr(string, z):
             r -= 1
         else:
             k = i - l
-
+#If Z[K] < R-i+1  then there is no prefix substring starting at  str[i], so  Z[i] = Z[K] and interval [L,R] remains same.
             if z[k] < r - i + 1:
                 z[i] = z[k]
-
+#If Z[K] >= R-i+1 then it is possible to extend the [L,R] interval
             else:
+ #set L as i and start matching from str[R]  onwards and get new R 
                 l = i
+    #update interval [L,R] and calculate Z[i] (=R-L+1).
                 while r < n and string[r - l] == string[r]:
                     r += 1
                 z[i] = r - l
