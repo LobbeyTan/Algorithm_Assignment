@@ -119,9 +119,10 @@ def match(text, pattern):
             return i - len(pattern) - 1
 
 
-MIN_MERGE = 16
+MIN_MERGE = 16  # We need a minimum of 16 items in the array to enter the merge sort, else the array will only be sorted with Insertion Sort
 
 
+# calculate minimum Run needed for InsertionSort
 def __calcMinRun(n):
     r = 0
     while n >= MIN_MERGE:
@@ -130,6 +131,7 @@ def __calcMinRun(n):
     return n + r
 
 
+# InsertionSort
 def __insertionSort(arr, left, right):
     for i in range(left + 1, right + 1):
         j = i
@@ -138,6 +140,7 @@ def __insertionSort(arr, left, right):
             j -= 1
 
 
+# MergeSort
 def __merge(arr, l, m, r):
     len1, len2 = m - l + 1, r - m
     left, right = [], []
@@ -170,8 +173,10 @@ def __merge(arr, l, m, r):
         j += 1
 
 
+# TimSort
 def timSort(arr):
     n = len(arr)
+    # Calculate the minimum Run needed
     minRun = __calcMinRun(n)
 
     for start in range(0, n, minRun):
