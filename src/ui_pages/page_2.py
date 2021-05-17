@@ -1,9 +1,9 @@
 from tkinter.scrolledtext import ScrolledText
-from sentiment import SentimentAnalysisTool, SentimentAnalysis
-from browser import WebBrowser
-from constant import *
 from threading import Thread
 import tkinter as tk
+from src.constant import *
+from src.solution.sentiment import SentimentAnalysisTool, SentimentAnalysis
+from src.utils.browser import WebBrowser
 
 
 class Page2(tk.Frame):
@@ -147,7 +147,7 @@ class Page2(tk.Frame):
         self.currentResult = self.tool.getSentiment(url)
 
     def __getSampleLinks(self):
-        with open("sentiment/link.txt", mode="r") as file:
+        with open(f"{sentiment}/link.txt", mode="r") as file:
             links = [link.strip() for link in file.readlines()]
         return links
 
@@ -191,4 +191,4 @@ class Page2(tk.Frame):
             print("Invalid mode")
             return None
 
-        self.__search(url=f"file:///sentiment/figures/{fname}_graph.html")
+        self.__search(url=f"file:///{sentiment}/figures/{fname}_graph.html")

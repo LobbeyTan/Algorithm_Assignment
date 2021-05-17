@@ -1,11 +1,11 @@
-from entity import *
-from distance import plotMap
-from application import Application
 from multiprocessing import Process
-from page_2 import Page2
-from page_1 import Page1
-from page_3 import Page3
-from page_4 import Page4
+from src.utils.entity import *
+from src.solution.distance import plotMap
+from src.ui_pages.application import Application
+from src.ui_pages.page_2 import Page2
+from src.ui_pages.page_1 import Page1
+from src.ui_pages.page_3 import Page3
+from src.ui_pages.page_4 import Page4
 
 
 # Initialize all the Courier Company

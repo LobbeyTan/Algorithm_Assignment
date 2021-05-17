@@ -1,5 +1,6 @@
 import tkinter as tk
-from constant import *
+from src.constant import *
+
 
 class Application(tk.Tk):
     def __init__(self, frames, customers, couriers, *args, **kwargs):

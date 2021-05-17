@@ -1,9 +1,18 @@
 from PIL import Image, ImageTk
 from tkinter.font import Font
+import os
+
+html = os.path.abspath("../html")
+icon = os.path.abspath("../icon")
+logo = os.path.abspath("../logo")
+sentiment = os.path.abspath("../sentiment")
+split = os.path.abspath("../split")
+test = os.path.abspath("../test")
+voice = os.path.abspath("../voice")
 
 
 def getIconImage(name, size=(20, 20)):
-    load = Image.open(f"icon/{name}.png")
+    load = Image.open(f"../icon/{name}.png")
     load = load.resize(size, Image.ANTIALIAS)
     icon = ImageTk.PhotoImage(load)
     return icon

@@ -3,12 +3,12 @@ import re
 import nltk
 import string
 import plotly.express as px
+import random
 from newspaper import Article, ArticleException
 from nltk.corpus import stopwords
-from algorithm import KMPSearch, match
-from constant import courierDict
-from request_with_cache import get
-import random
+from src.utils.request_with_cache import get
+from src.solution.algorithm import KMPSearch, match
+from src.constant import courierDict, sentiment
 
 APIKey = "AIzaSyBchEciYYbd2nMgbGseIZGjtWZvj3e0riM"
 
@@ -41,9 +41,12 @@ class SentimentAnalysis:
         self.analyzeSentiment()
 
     def __getArticle(self, url):
+        # Get the article
         article = Article(url)
         try:
             article.download()
+
+            # Parse the article
             article.parse()
         except ArticleException:
             pass
@@ -111,8 +114,9 @@ class SentimentAnalysis:
         # Plot histogram of word frequency
         fig = px.bar(x=word, y=freq, labels=dict(x="Word", y="Frequency"),
                      title=f"Word Frequency in ({self.name}) Page")
-        fig.write_html("sentiment/figures/wordFreq_graph.html")
+        fig.write_html(f"{sentiment}/figures/wordFreq_graph.html")
 
+    # Plot the sentiment analysis graph based on type of model
     def plotSentimentGraph(self, model=""):
         if model == "positive":
             output = self.pos_output
@@ -124,6 +128,7 @@ class SentimentAnalysis:
             print(f"{model} is invalid, only positive, negative or neutral")
             return None
 
+        # Convert the type of word analysis into sorted frequency dictionary
         freqDict = self.__wordListToFreqDict(output)
         sortedDict = self.__sortFreqDict(freqDict)
 
@@ -135,20 +140,26 @@ class SentimentAnalysis:
         if len(y) == 0:
             y = None
 
+        # Plot the bar chart
         fig = px.bar(x=x, y=y, labels=dict(x="Word", y="Frequency"),
                      title=f"{model.capitalize()} Word Frequency in ({self.name}) Page")
 
-        fig.write_html(f"sentiment/figures/{model}_graph.html")
+        # Export the bar chart into html file
+        fig.write_html(f"{sentiment}/figures/{model}_graph.html")
 
+    # Analyze the sentiment
     def analyzeSentiment(self):
-        with open("sentiment/negative.txt", mode='r', encoding='utf-8') as negFile:
+        # Open negative word list file
+        with open(f"{sentiment}/negative.txt", mode='r', encoding='utf-8') as negFile:
             neg = negFile.read().lower()
             nltk_neg = [x.strip() for x in neg.split(',')]
 
-        with open("sentiment/positive.txt") as posFile:
+        # Open positive word list file
+        with open(f"{sentiment}/positive.txt") as posFile:
             pos = posFile.read().lower()
             nltk_pos = [x.strip() for x in pos.split(',')]
 
+        # Identify and seperate the wordList into categories [positive, negative, neutral]
         for word in self.wordList:
             if self.__inList(nltk_neg, word):
                 self.neg_output.append(word)
@@ -160,12 +171,15 @@ class SentimentAnalysis:
         if len(self.wordList) == 0:
             return
 
+        # Calculate the positivity and negativity
         self.negativity = len(self.neg_output) / len(self.wordList)
         self.positivity = len(self.pos_output) / len(self.wordList)
 
+        # Identify the related courier of the article
         self.relatedCourier = self.__getRelatedCourier()[0]
         courier = courierDict[self.relatedCourier]
 
+        # Make conclusion on the analysis
         if self.positivity > self.negativity:
             self.sentimentDescription = f"This article related to {courier} is giving more postive sentiments "
         elif self.negativity > self.positivity:
@@ -174,11 +188,13 @@ class SentimentAnalysis:
             self.sentimentDescription = f"This article related to {courier} is giving neutral sentiments"
 
     def __inList(self, nltkList, key):
+        # Using Z algorithm to identify matched word
         for word in nltkList:
             if match(key, word) == 0 and len(key) == len(word):
                 return True
         return False
 
+    # Obtain the courier which the article refer to
     def __getRelatedCourier(self):
         relatedCourierScore = {-1: 0}
         for word in self.sortedDict.keys():
@@ -206,11 +222,13 @@ class SentimentAnalysis:
         return attributes
 
 
+# A driver class use to call and analyze sentiment
 class SentimentAnalysisTool:
     def __init__(self, couriers: object = []) -> object:
         self.history = {}
         self.couriers = couriers
 
+    # Get the sentiment of a article with the url as a parameter
     def getSentiment(self, url) -> SentimentAnalysis:
         if url in self.history:
             return self.history[url]
@@ -224,17 +242,22 @@ class SentimentAnalysisTool:
 
             return result
 
+    # Get the list of analyzed urls
     def getUrls(self):
         return list(self.history.keys())
 
+    # Check whether an url has been analyzed
     def hasAnalyzed(self, url):
         return url in self.history
 
+    # Randomly analyzed the sentiment of random articles
     def randomSentiment(self, q, n=5):
         exactTerms, query = q
         items = []
 
+        # Retrieve 40 articles through Google Custom Search API
         for i in range(1, 40, 10):
+            # Parameters to be included
             params = {
                 "c2coff": "1",
                 "cx": searchEngineID,
@@ -252,8 +275,10 @@ class SentimentAnalysisTool:
 
         print(query)
 
+        # Randomly get n links from the result obtained
         urls = [item['link'] for item in random.sample(items, n)]
 
+        # Use multiprocessor to speed up analysis
         with concurrent.futures.ProcessPoolExecutor(max_workers=n) as executor:
             results = executor.map(randomSentiment, urls)
 
@@ -270,6 +295,7 @@ def randomSentiment(url):
     return url, SentimentAnalysis(url)
 
 
+# Download nltk resources
 def downloadResources():
     nltk.download('punkt')
     nltk.download('stopwords')
