@@ -88,8 +88,10 @@ def getZarr(string, z):
 
     l, r, k = 0, 0, 0
     for i in range(1, n):
-
+        # if i>R nothing matches so we will calculate. Z[i] using naive way
         if i > r:
+
+            # Reset L and R and compute new [L,R] by comparing  str[0..] to str[i..] and get Z[i] (= R-L+1)
             l, r = i, i
             while r < n and string[r - l] == string[r]:
                 r += 1
@@ -98,11 +100,16 @@ def getZarr(string, z):
         else:
             k = i - l
 
+            # If Z[K] < R-i+1  then there is no prefix substring starting at  str[i]
+            # so Z[i] = Z[K] and interval [L,R] remains same
             if z[k] < r - i + 1:
                 z[i] = z[k]
 
+            # If Z[K] >= R-i+1 then it is possible to extend the [L,R] interval
             else:
+                # set L as i and start matching from str[R]  onwards and get new R
                 l = i
+                # update interval [L,R] and calculate Z[i] (=R-L+1).
                 while r < n and string[r - l] == string[r]:
                     r += 1
                 z[i] = r - l
@@ -119,9 +126,12 @@ def match(text, pattern):
             return i - len(pattern) - 1
 
 
+# We need a minimum of 16 items in the array to enter the merge sort
+# Else the array will only be sorted with Insertion Sort
 MIN_MERGE = 16
 
 
+# calculate minimum Run needed for InsertionSort
 def __calcMinRun(n):
     r = 0
     while n >= MIN_MERGE:
@@ -130,6 +140,7 @@ def __calcMinRun(n):
     return n + r
 
 
+# InsertionSort
 def __insertionSort(arr, left, right):
     for i in range(left + 1, right + 1):
         j = i
@@ -138,6 +149,7 @@ def __insertionSort(arr, left, right):
             j -= 1
 
 
+# MergeSort
 def __merge(arr, l, m, r):
     len1, len2 = m - l + 1, r - m
     left, right = [], []
@@ -170,6 +182,7 @@ def __merge(arr, l, m, r):
         j += 1
 
 
+# TimSort
 def timSort(arr):
     n = len(arr)
     minRun = __calcMinRun(n)
@@ -178,6 +191,7 @@ def timSort(arr):
         end = min(start + minRun - 1, n - 1)
         __insertionSort(arr, start, end)
 
+    # Calculate the minimum Run needed
     size = minRun
     while size < n:
         for left in range(0, n, 2 * size):

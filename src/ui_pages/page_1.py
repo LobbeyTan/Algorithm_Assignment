@@ -1,8 +1,8 @@
 import sys
 import tkinter as tk
 from tkinter import messagebox
-from browser import WebBrowser
-from constant import *
+from src.utils.browser import WebBrowser
+from src.constant import *
 
 
 class Page1(tk.Frame):
@@ -22,13 +22,13 @@ class Page1(tk.Frame):
         self.showDistance()
 
     def loadURL(self, cusID):
-        self.webBrowser.loadUrl(f'file:///html/customer{cusID}.html')
+        self.webBrowser.loadUrl(f"file:///{html}/customer{cusID}.html")
 
     def showMap(self):
         browserFrame = tk.Frame(self, bg='blue', width=810, height=500)
         browserFrame.grid(row=0, column=0, columnspan=2)
 
-        initialUrl = 'file:///html/customer1.html'
+        initialUrl = f'file:///{html}/customer1.html'
         browserSetting = {}
         self.webBrowser = WebBrowser(browserFrame, browserSetting, initialUrl, "Customer Route Path")
         self.webBrowser.start()
@@ -60,6 +60,7 @@ class Page1(tk.Frame):
         exitButton.config(width=70, **buttonConfig1)
         exitButton.grid(row=0, column=0)
 
+    # Display Distance
     def showDistance(self):
         frame = tk.Frame(self, bg=lightBlue)
         frame.grid(row=2, column=0, sticky="w", columnspan=2)
@@ -67,6 +68,11 @@ class Page1(tk.Frame):
         for i, customer in enumerate(self.customers):
             displayDistance = DisplayDistance(frame, customer, i)
             displayDistance.createInstance()
+
+            # print(f"Customer {i+1} distance from {customer.origin} to {customer.destination} is {customer.distance}")
+            # for courier, distance in customer.distanceWithHub.items():
+            #     print(f"Distance when passes through {courier.name} at {courier.location} is {distance}")
+            # print("\n")
 
 
 class DisplayDistance:

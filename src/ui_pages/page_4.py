@@ -8,13 +8,13 @@ import speech_recognition as sr
 import random
 from PIL import Image, ImageTk
 from tkinter import ttk
+from os import listdir
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.scrolledtext import ScrolledText
 from multiprocessing import Process, Array
-from constant import *
 from scipy.io import wavfile
-from os import listdir
-from dtw import runDTW
+from src.solution.dtw import runDTW
+from src.constant import *
 
 
 class Page4(tk.Frame):
@@ -43,7 +43,7 @@ class Page4(tk.Frame):
         controller = tk.Button(frame)
         controller.place(x=5, y=175)
 
-        TkVideo("voice/video.mp4", "voice/voice.wav", controller, video, size=(300, 200))
+        TkVideo(f"{voice}/video.mp4", f"{voice}/voice.wav", controller, video, size=(300, 200))
 
         tk.Label(frame, text="Extracted Word Using Google Speech Recognition:",
                  anchor="w", font=textFontU, background=lightBlue).grid(row=0, column=1, padx=10, sticky="nw")
@@ -61,7 +61,7 @@ class Page4(tk.Frame):
 
     def __recognition(self):
         recognizer = sr.Recognizer()
-        audioFile = sr.AudioFile("voice/voice.wav")
+        audioFile = sr.AudioFile(f"{voice}/voice.wav")
 
         with audioFile as source:
             audio = recognizer.record(source)
@@ -81,8 +81,8 @@ class Page4(tk.Frame):
         canvas.create_window((5, 5), window=scrollable_frame, anchor="nw")
 
         plt.style.use('seaborn-whitegrid')
-        for i, testWord in enumerate(listdir("test/")):
-            color = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+        for i, testWord in enumerate(listdir(test)):
+            color = "#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)])
             AudioContent(scrollable_frame, testWord, row=i // 2, column=i % 2, color=color)
 
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.__onFrameConfigure(canvas))
@@ -95,7 +95,7 @@ class AudioContent:
     def __init__(self, master, name, row, column, color):
         self.name = name
         self.color = color
-        self.path = f"test/{name}"
+        self.path = f"{test}/{name}"
         self.audioPlayer = audioplayer.AudioPlayer(self.path)
         fs, self.data = wavfile.read(self.path)
 
@@ -160,16 +160,12 @@ class AudioContent:
             self.status.config(text="Analyzing", foreground="black")
 
             rtn = Array('d', 3)
-            process = Process(target=runDTW, args=(self.name, rtn, "split", 60))
+            process = Process(target=runDTW, args=(self.name, rtn, 60))
             thread = threading.Thread(target=self.__updateLabels, args=(process, rtn))
             thread.setDaemon(True)
 
             process.start()
             thread.start()
-
-    def __DTW(self):
-        pass
-        # self.isFound, self.dist, self.chunkth = runDTW(self.name, limit=60)
 
     def __updateLabels(self, process, rtn):
         process.join()

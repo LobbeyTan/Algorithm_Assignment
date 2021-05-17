@@ -1,7 +1,3 @@
-from abc import ABC
-from collections import Sequence
-
-
 class Courier:
     def __init__(self, name, location, coordinate):
         self.name = name

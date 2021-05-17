@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from PIL import Image, ImageTk
-from entity import *
-from ranking import CourierRecommendation
-from constant import *
+from src.utils.entity import *
+from src.solution.ranking import CourierRecommendation
+from src.constant import *
 
 
 class Page3(tk.Frame):
@@ -135,13 +135,13 @@ class CustomerCard:
 
         courier, score = list(self.ranking.items())[0]
 
-        load = Image.open(f"logo/{courier.name}.png")
+        load = Image.open(f"{logo}/{courier.name}.png")
         load = load.resize((120, 120), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(load)
 
-        logo = tk.Label(recommendation, image=img, background=blue, borderwidth=2, relief="ridge")
-        logo.image = img
-        logo.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        courierlogo = tk.Label(recommendation, image=img, background=blue, borderwidth=2, relief="ridge")
+        courierlogo.image = img
+        courierlogo.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         tk.Label(recommendation, text="RECOMMENDED", font=textFontB, background=blue).grid(row=1, column=0, sticky="s")
 
@@ -165,13 +165,13 @@ class SentimentCard:
 
     def showSentiment(self):
         name = self.courier.name
-        load = Image.open(f"logo/{name}.png")
+        load = Image.open(f"{logo}/{name}.png")
         load = load.resize((75, 75), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(load)
 
-        logo = tk.Label(self.frame, image=img, background=lightPurple)
-        logo.image = img
-        logo.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        courierlogo = tk.Label(self.frame, image=img, background=lightPurple)
+        courierlogo.image = img
+        courierlogo.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         for result in self.courier.sentimentResults:
             self.positivity += result.positivity

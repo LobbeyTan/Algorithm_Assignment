@@ -1,6 +1,7 @@
 import gmplot
-from request_with_cache import get
-from algorithm import cocktailSort
+from src.utils.request_with_cache import get
+from src.solution.algorithm import cocktailSort
+from src.constant import html
 
 APIKey = 'AIzaSyB7nJMebT6DAXDxqcZRO6rCovT7imtmyXE'
 
@@ -9,8 +10,8 @@ APIKey = 'AIzaSyB7nJMebT6DAXDxqcZRO6rCovT7imtmyXE'
 def __getDistance(origins, destinations):
     baseUrl = "https://maps.googleapis.com/maps/api/distancematrix/json"
     params = {
-        "origins": "|".join(f"{x},{y}"for x, y in origins),
-        "destinations": "|".join(f"{x},{y}"for x, y in destinations),
+        "origins": "|".join(f"{x},{y}" for x, y in origins),
+        "destinations": "|".join(f"{x},{y}" for x, y in destinations),
         "key": APIKey
     }
 
@@ -59,4 +60,4 @@ def plotMap(couriers, customers):
         gmap.directions(customer.originCoords, customer.desCoords, color='black', zIndex=1)
 
         # Draw the map to an HTML file:
-        gmap.draw(f'html/customer{customer.ID}.html')
+        gmap.draw(f"{html}/customer{customer.ID}.html")
