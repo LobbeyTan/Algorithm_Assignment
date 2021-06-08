@@ -26,6 +26,11 @@ def getCustomers():
         Customer(1, "Rawang", "Bukit Jelutong",
                  originCoords=Coordinate(lat=3.3615395462207878, long=101.56318183511695),
                  desCoords=Coordinate(lat=3.1000170516638885, long=101.53071480907951)),
+
+        # Customer(1, "Rawang", "Bukit Jelutong",
+        #          originCoords=Coordinate(lat=3.1209, long=101.6538),
+        #          desCoords=Coordinate(lat=3.1000170516638885, long=101.53071480907951)),
+
         Customer(2, "Subang Jaya", "Puncak Alam",
                  originCoords=Coordinate(lat=3.049398375759954, long=101.58546611160301),
                  desCoords=Coordinate(lat=3.227994355250716, long=101.42730357605375)),

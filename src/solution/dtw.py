@@ -206,7 +206,7 @@ def runDTW(testWord: str, rtn: multiprocessing.Array, limit=95):
                 rtn[2] = th  # ith Chunks
                 return
 
-        for i in range(m, n + 1, 20):
+        for i in range(m, n + 1, 20):  # Step size = 20
             dist = (fastDTW(test, source[i - m:i, :])[0]) / m
             if dist < mindist:
                 mindist = dist
